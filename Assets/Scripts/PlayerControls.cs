@@ -1,75 +1,88 @@
+using System;
 using UnityEngine;
-//using UnityEngine.InputSystem; 
 
 public class PlayerControls : MonoBehaviour
 {
-    // Start is called before the first frame update
-
-    //[SerializeField] InputAction movement; 
+    [Header("General Setup Settings")]
+    [Tooltip("How fast ship moves up and down based uppon player input")]
     [SerializeField] float controlSpeed = 10f;
-    [SerializeField] float xRange = 5f; /*-5 to 5*/
-    [SerializeField] float yRange = 3.5f; /*-5 to 5*/
+    [Tooltip("How far player moves horizontally")]
+    [SerializeField] float xRange = 10f;
+    [Tooltip("How far player moves vertically")]
+    [SerializeField] float yRange = 7f; 
+   
+    [Header("Laser gun array")]
+    [Tooltip("Add all player tuning here")]
+    [SerializeField] GameObject[] lasers;
 
+    [Header("Screen position based tuning")]
+    [SerializeField] float positionPitchFactor = -2f;
+    [SerializeField] float controlPitchFactor = -10f;
+
+    [Header("Screen position based tuning")]
+    [SerializeField] float controlYawFactor = -5f; 
+    [SerializeField] float controlRollFactor = -20f;
+
+ 
+    float xThrow , yThrow;
 
     void Start()
     {
 
     }
 
-    //New Input Sys
-    //void OnEnable()
-    //{
-    //    movement.Enable();   
-    //}
-    //void OnDisable()
-    //{
-    //    movement.Disable();
-    //}
-    //New Input Sys
-
-
-    // Update is called once per frame
     void Update()
     {
-        float xThrow = Input.GetAxis("Horizontal");
-        //Debug.Log(xThrow + " HOOOR");
-        float yThrow = Input.GetAxis("Vertical");
+        ProcessTranslation();
+        ProcessRotation();
+        ProcessFiring();
+    }
 
-        float xOffset = xThrow * Time.deltaTime * controlSpeed; 
+    void ProcessRotation() 
+    {
+        float pitchDueToPosition = transform.localPosition.y * positionPitchFactor;
+        float pitchDueToControlThrow = yThrow * controlPitchFactor;
+        float pitch = pitchDueToPosition + pitchDueToControlThrow;
+        float yaw = xThrow * controlYawFactor;
+        float roll = xThrow * controlRollFactor;
+        transform.localRotation = Quaternion.Euler(pitch, yaw, roll);
+    }
+         
+     void ProcessTranslation() 
+    {   
+        xThrow = Input.GetAxis("Horizontal");
+        //Debug.Log(xThrow + "LSVFKDVK");
+        yThrow = Input.GetAxis("Vertical");
+        float xOffset = xThrow * Time.deltaTime * controlSpeed;
         float rawXPos = transform.localPosition.x + xOffset;
         float clampedXPos = Mathf.Clamp(rawXPos, -xRange, xRange);
-
-
         float yOffset = yThrow * Time.deltaTime * controlSpeed;
         float rawYPos = transform.localPosition.y + yOffset;
         float clampedYpos = Mathf.Clamp(rawYPos, -yRange, yRange);
-
-
         transform.localPosition = new Vector3
         (clampedXPos, clampedYpos, transform.localPosition.z);
-
-
-        //transform.l ocalPosition = new Vector3
-        //(transform.localPosition.x,
-        //transform.localPosition.y,
-        //transform.localPosition.z);
-
-
-        //New Input Sys
-        //Note : to use New Input Sys You have to install Input New Sys Package
-        //Into Player Section in the project Settings change the Active Handling to Both or Input Sys (New)
-        //in the movement we created we selected 2d Vector X & Y
-        //Add WASD
-
-
-
-        //float horizontalThrow = movement.ReadValue<Vector2>().x;
-        //Debug.Log(horizontalThrow  + "Hor");
-        //float verticalThrow = movement.ReadValue<Vector2>().y;
-        //Debug.Log(verticalThrow + "ver");
-
-
-
-        //New Input Sys
     }
+
+    void ProcessFiring()
+    {
+        if (Input.GetButton("Fire1"))
+        {
+            SetLaserActive(true);
+        }
+        else
+        {
+            SetLaserActive(false);
+        }
+    }
+
+    void SetLaserActive(bool isActive)
+    {
+       foreach (GameObject laser in lasers)
+        {
+            var emissionModule = laser.GetComponent<ParticleSystem>().emission;
+            emissionModule.enabled = isActive;
+
+        }
+    }
+
 }

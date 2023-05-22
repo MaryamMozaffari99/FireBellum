@@ -351,6 +351,8 @@
 -r:"Library/Bee/artifacts/1900b0aE.dag/UnityEngine.UI.ref.dll"
 "Assets/Conifers [BOTD]/Render Pipeline Support/Built-in RP/CTI Runtime Components/Scripts/CTI_CustomWind.cs"
 "Assets/Conifers [BOTD]/Render Pipeline Support/Built-in RP/CTI Runtime Components/Scripts/CTI_Utils.cs"
+"Assets/Scripts/CollisionHandler.cs"
+"Assets/Scripts/Enemy.cs"
 "Assets/Scripts/PlayerControls.cs"
 "Assets/StarSparrow/Readme/Readme Files/Scripts/ReadmeStarSparrow.cs"
 -langversion:9.0
